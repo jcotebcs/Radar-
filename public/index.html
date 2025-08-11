@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#ffffff">
+  <title>Radar Notes</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+  <h1>Radar Notes</h1>
+  <section id="controls">
+    <label for="audioInput">Microphone:</label>
+    <select id="audioInput"></select>
+    <button id="recordBtn">Start Recording</button>
+    <button id="tagBtn">Add Tag</button>
+    <button id="printBtn">Print</button>
+  </section>
+
+  <section id="tags">
+    <h2>Tags</h2>
+    <ul id="tagList"></ul>
+  </section>
+
+  <section id="camera">
+    <h2>Camera</h2>
+    <label for="videoInput">Camera:</label>
+    <select id="videoInput"></select>
+    <button id="cameraBtn">Start Camera</button>
+    <div>
+      <input id="cameraUrl" placeholder="Remote camera URL">
+      <button id="loadCameraUrl">Load URL</button>
+    </div>
+    <video id="preview" autoplay playsinline></video>
+  </section>
+
+  <section id="timer">
+    <h2>Timer</h2>
+    <input id="timerTitle" placeholder="Title">
+    <input id="timerSeconds" type="number" placeholder="Seconds">
+    <button id="startTimer">Start</button>
+    <button id="stopTimer">Stop</button>
+    <div id="timerDisplay"></div>
+  </section>
+
+  <section id="tally">
+    <h2>Tally</h2>
+    <input id="tallyName" placeholder="Counter name">
+    <button id="addCounter">Add Counter</button>
+    <ul id="tallyList"></ul>
+  </section>
+
+  <section id="contacts">
+    <h2>Contacts</h2>
+    <ul id="contactList"></ul>
+  </section>
+
+  <section id="callLogs">
+    <h2>Call Logs</h2>
+    <ul id="callLogList"></ul>
+  </section>
+
+  <section id="chat">
+    <h2>Chat with Radar Oriley</h2>
+    <div id="chatLog" class="chat-log"></div>
+    <input id="chatInput" placeholder="Type a message">
+    <button id="chatSend">Send</button>
+  </section>
+
+  <script src="app.js"></script>
+</body>
+</html>
