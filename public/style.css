@@ -1,0 +1,50 @@
+body {
+  font-family: sans-serif;
+  margin: 2rem;
+}
+#controls {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+#recordBtn.recording {
+  background: red;
+  color: white;
+}
+#tagList li {
+  margin-bottom: 0.25rem;
+}
+
+#camera {
+  margin-top: 1rem;
+}
+#camera video {
+  max-width: 100%;
+  height: auto;
+  margin-top: 0.5rem;
+}
+
+#timer, #tally, #contacts, #callLogs {
+  margin-top: 1rem;
+}
+
+#tallyList li {
+  margin-bottom: 0.25rem;
+}
+
+#contactList li, #callLogList li {
+  margin-bottom: 0.25rem;
+}
+
+#chat {
+  margin-top: 1rem;
+}
+
+.chat-log {
+  border: 1px solid #ccc;
+  padding: 0.5rem;
+  height: 150px;
+  overflow-y: auto;
+  margin-bottom: 0.5rem;
+}
