@@ -1,0 +1,126 @@
+const http = require('http');
+const fs = require('fs');
+const path = require('path');
+const url = require('url');
+
+// in-memory stores
+const recordings = new Map();
+const timers = new Map();
+const tallies = new Map();
+let nextTimerId = 1;
+let nextTallyId = 1;
+
+function send(res, status, payload, type = 'application/json') {
+  res.writeHead(status, { 'Content-Type': type });
+  if (payload === undefined) return res.end();
+  res.end(type === 'application/json' ? JSON.stringify(payload) : payload);
+}
+
+function parseBody(req) {
+  return new Promise(resolve => {
+    let body = '';
+    req.on('data', chunk => (body += chunk));
+    req.on('end', () => {
+      try { resolve(JSON.parse(body || '{}')); }
+      catch { resolve({}); }
+    });
+  });
+}
+
+const server = http.createServer(async (req, res) => {
+  const parsed = url.parse(req.url, true);
+  const { pathname, query } = parsed;
+
+  // --- Ingest endpoints ---
+  if (req.method === 'POST' && pathname === '/v1/ingest/init') {
+    const id = Date.now().toString();
+    recordings.set(id, []);
+    return send(res, 200, { recordingId: id });
+  }
+  if (req.method === 'POST' && pathname === '/v1/ingest/chunk') {
+    const id = query.id;
+    const store = recordings.get(id);
+    if (!store) return send(res, 404, { error: 'unknown id' });
+    const data = [];
+    req.on('data', d => data.push(d));
+    req.on('end', () => {
+      store.push(Buffer.concat(data));
+      send(res, 200, { ok: true });
+    });
+    return;
+  }
+  if (req.method === 'POST' && pathname === '/v1/ingest/finalize') {
+    const id = query.id;
+    recordings.delete(id);
+    return send(res, 200, {
+      transcript: 'mock transcript',
+      bluf: 'mock bluf summary'
+    });
+  }
+
+  // --- Timer endpoints ---
+  if (pathname === '/v1/timers' && req.method === 'GET') {
+    return send(res, 200, Array.from(timers.values()));
+  }
+  if (pathname === '/v1/timers' && req.method === 'POST') {
+    const body = await parseBody(req);
+    const id = String(nextTimerId++);
+    timers.set(id, { id, title: body.title || `Timer ${id}`, duration: body.duration || 0, start: null, end: null });
+    return send(res, 200, timers.get(id));
+  }
+  if (req.method === 'POST' && pathname.startsWith('/v1/timers/') && pathname.endsWith('/start')) {
+    const id = pathname.split('/')[3];
+    const timer = timers.get(id);
+    if (!timer) return send(res, 404, { error: 'unknown timer' });
+    timer.start = Date.now();
+    timer.end = timer.start + timer.duration * 1000;
+    return send(res, 200, timer);
+  }
+  if (req.method === 'POST' && pathname.startsWith('/v1/timers/') && pathname.endsWith('/stop')) {
+    const id = pathname.split('/')[3];
+    const timer = timers.get(id);
+    if (!timer) return send(res, 404, { error: 'unknown timer' });
+    timer.start = null;
+    return send(res, 200, timer);
+  }
+
+  // --- Tally endpoints ---
+  if (pathname === '/v1/tally' && req.method === 'GET') {
+    return send(res, 200, Array.from(tallies.values()));
+  }
+  if (pathname === '/v1/tally' && req.method === 'POST') {
+    const body = await parseBody(req);
+    const id = String(nextTallyId++);
+    tallies.set(id, { id, title: body.title || `Counter ${id}`, value: 0 });
+    return send(res, 200, tallies.get(id));
+  }
+  if (req.method === 'POST' && pathname.startsWith('/v1/tally/') && pathname.endsWith('/inc')) {
+    const id = pathname.split('/')[3];
+    const tally = tallies.get(id);
+    if (!tally) return send(res, 404, { error: 'unknown tally' });
+    tally.value += 1;
+    return send(res, 200, tally);
+  }
+
+  // --- static files ---
+  const filePath = path.join(__dirname, '..', 'client', pathname === '/' ? 'index.html' : pathname);
+  fs.readFile(filePath, (err, data) => {
+    if (err) {
+      res.writeHead(404);
+      res.end('Not found');
+    } else {
+      const ext = path.extname(filePath);
+      const type = {
+        '.html': 'text/html',
+        '.js': 'text/javascript',
+        '.css': 'text/css'
+      }[ext] || 'application/octet-stream';
+      send(res, 200, data, type);
+    }
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server running at http://localhost:${PORT}`);
+});

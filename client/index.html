@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Radar Notes</title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+  <h1>Radar Notes</h1>
+
+  <section id="recorder">
+    <h2>Audio Recorder</h2>
+    <button id="recordBtn">Start Recording</button>
+  </section>
+
+  <section id="timer">
+    <h2>Timer</h2>
+    <input id="timerTitle" placeholder="Title">
+    <input id="timerDuration" type="number" placeholder="Duration (sec)">
+    <button id="createTimer">Create</button>
+    <div id="timerDisplay"></div>
+    <button id="startTimer">Start</button>
+    <button id="stopTimer">Stop</button>
+  </section>
+
+  <section id="tally">
+    <h2>Tally Counters</h2>
+    <input id="tallyTitle" placeholder="Counter name">
+    <button id="addTally">Add</button>
+    <ul id="tallyList"></ul>
+  </section>
+
+  <script src="/app.js"></script>
+</body>
+</html>
