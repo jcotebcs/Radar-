@@ -2,6 +2,7 @@ const http = require('http');
 const fs = require('fs');
 const path = require('path');
 const url = require('url');
+const { randomUUID } = require('crypto');
 
 // in-memory stores
 const recordings = new Map();
@@ -10,6 +11,7 @@ const tallies = new Map();
 let nextTimerId = 1;
 let nextTallyId = 1;
 const MAX_UPLOAD_SIZE = 1 * 1024 * 1024; // 1MB
+const MAX_BODY_SIZE = 1 * 1024 * 1024; // 1MB
 
 const clientDir = path.join(__dirname, '..', 'client');
 
@@ -22,8 +24,21 @@ function send(res, status, payload, type = 'application/json') {
 function parseBody(req) {
   return new Promise((resolve, reject) => {
     let body = '';
-    req.on('data', chunk => (body += chunk));
+    let size = 0;
+    let tooLarge = false;
+    req.on('data', chunk => {
+      if (tooLarge) return;
+      size += chunk.length;
+      if (size > MAX_BODY_SIZE) {
+        tooLarge = true;
+        return;
+      }
+      body += chunk;
+    });
     req.on('end', () => {
+      if (tooLarge) {
+        return reject({ status: 413, payload: { error: 'payload too large' } });
+      }
       try {
         resolve(JSON.parse(body || '{}'));
       } catch {
@@ -38,11 +53,11 @@ const server = http.createServer(async (req, res) => {
   const { pathname, query } = parsed;
 
   // --- Ingest endpoints ---
-  if (req.method === 'POST' && pathname === '/v1/ingest/init') {
-    const id = Date.now().toString();
-    recordings.set(id, []);
-    return send(res, 200, { recordingId: id });
-  }
+    if (req.method === 'POST' && pathname === '/v1/ingest/init') {
+      const id = randomUUID();
+      recordings.set(id, []);
+      return send(res, 200, { recordingId: id });
+    }
   if (req.method === 'POST' && pathname === '/v1/ingest/chunk') {
     const id = query.id;
     const store = recordings.get(id);
@@ -61,14 +76,17 @@ const server = http.createServer(async (req, res) => {
     });
     return;
   }
-  if (req.method === 'POST' && pathname === '/v1/ingest/finalize') {
-    const id = query.id;
-    recordings.delete(id);
-    return send(res, 200, {
-      transcript: 'mock transcript',
-      bluf: 'mock bluf summary'
-    });
-  }
+    if (req.method === 'POST' && pathname === '/v1/ingest/finalize') {
+      const id = query.id;
+      if (!recordings.has(id)) {
+        return send(res, 404, { error: 'unknown id' });
+      }
+      recordings.delete(id);
+      return send(res, 200, {
+        transcript: 'mock transcript',
+        bluf: 'mock bluf summary'
+      });
+    }
 
   // --- Timer endpoints ---
   if (pathname === '/v1/timers' && req.method === 'GET') {
