@@ -126,6 +126,12 @@ const server = http.createServer(async (req, res) => {
     timer.end = null;
     return send(res, 200, timer);
   }
+  if (req.method === 'DELETE' && pathname.startsWith('/v1/timers/')) {
+    const id = pathname.split('/')[3];
+    if (!timers.has(id)) return send(res, 404, { error: 'unknown timer' });
+    timers.delete(id);
+    return send(res, 200, { ok: true });
+  }
 
   // --- Tally endpoints ---
   if (pathname === '/v1/tally' && req.method === 'GET') {
@@ -162,6 +168,12 @@ const server = http.createServer(async (req, res) => {
     if (!tally) return send(res, 404, { error: 'unknown tally' });
     tally.value = 0;
     return send(res, 200, tally);
+  }
+  if (req.method === 'DELETE' && pathname.startsWith('/v1/tally/')) {
+    const id = pathname.split('/')[3];
+    if (!tallies.has(id)) return send(res, 404, { error: 'unknown tally' });
+    tallies.delete(id);
+    return send(res, 200, { ok: true });
   }
 
   // --- static files ---

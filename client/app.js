@@ -81,6 +81,17 @@ document.getElementById('stopTimer').onclick = async () => {
   }
 };
 
+document.getElementById('deleteTimer').onclick = async () => {
+  if (!currentTimerId) return;
+  try {
+    await fetch(`/v1/timers/${currentTimerId}`, { method: 'DELETE' });
+    currentTimerId = null;
+    timerDisplay.textContent = '';
+  } catch {
+    setStatus('Failed to delete timer');
+  }
+};
+
 async function tick() {
   if (!currentTimerId) return;
   let timers;
@@ -144,6 +155,38 @@ function addTallyToList(t) {
   resetBtn.setAttribute('aria-label', `Reset ${t.title}`);
   resetBtn.onclick = () => update('reset');
 
-  li.append(label, value, incBtn, decBtn, resetBtn);
+  const delBtn = document.createElement('button');
+  delBtn.textContent = 'delete';
+  delBtn.setAttribute('aria-label', `Delete ${t.title}`);
+  delBtn.onclick = async () => {
+    try {
+      await fetch(`/v1/tally/${t.id}`, { method: 'DELETE' });
+      li.remove();
+    } catch {
+      setStatus('Delete failed');
+    }
+  };
+
+  li.append(label, value, incBtn, decBtn, resetBtn, delBtn);
   document.getElementById('tallyList').appendChild(li);
 }
+
+async function loadInitial() {
+  try {
+    const [ts, talliesData] = await Promise.all([
+      fetch('/v1/timers').then(r => r.json()),
+      fetch('/v1/tally').then(r => r.json())
+    ]);
+    if (ts.length > 0) {
+      const t = ts[ts.length - 1];
+      currentTimerId = t.id;
+      timerDisplay.textContent = `${t.title}: ${t.duration}s`;
+      if (t.start) tick();
+    }
+    talliesData.forEach(addTallyToList);
+  } catch {
+    setStatus('Failed to load data');
+  }
+}
+
+loadInitial();

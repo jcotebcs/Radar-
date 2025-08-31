@@ -16,7 +16,8 @@ Then open `http://localhost:3000` in your browser.
 
 - Record audio and send to the server; the server responds with a mock BLUF summary.
 - Create timers with positive durations; start and stop them safely.
-- Create tally counters and adjust them with increment, decrement, or reset.
+- Create tally counters and adjust them with increment, decrement, reset, or delete.
+- Delete timers or tally counters and reload existing ones on page load.
 - Recording and API endpoints enforce size limits and return `404` for unknown IDs.
 
 This repository is a starting point for further development such as VOX detection,
