@@ -21,6 +21,8 @@ Then open `http://localhost:3000` in your browser.
 - Recording and API endpoints enforce size limits and return `404` for unknown IDs.
 - Optional request logging via `LOG_REQUESTS=1` prints method, path, and status.
 - Uncaught server errors now return JSON with HTTP 500 status.
+- JSON responses end with a newline for friendlier command-line usage.
+- Static file serving resolves paths safely to block directory traversal attempts.
 
 This repository is a starting point for further development such as VOX detection,
 LLM integration, calendar publishing, and external API adapters.

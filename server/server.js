@@ -20,7 +20,8 @@ const clientDir = path.join(__dirname, '..', 'client');
 function send(res, status, payload, type = 'application/json') {
   res.writeHead(status, { 'Content-Type': type });
   if (payload === undefined) return res.end();
-  res.end(type === 'application/json' ? JSON.stringify(payload) : payload);
+  const data = type === 'application/json' ? JSON.stringify(payload) + '\n' : payload;
+  res.end(data);
 }
 
 function parseBody(req) {
@@ -185,8 +186,12 @@ const server = http.createServer(async (req, res) => {
   }
 
     // --- static files ---
-    let filePath = path.join(clientDir, pathname === '/' ? 'index.html' : pathname);
-    filePath = path.normalize(filePath);
+    let filePath;
+    if (pathname === '/') {
+      filePath = path.join(clientDir, 'index.html');
+    } else {
+      filePath = path.resolve(clientDir, '.' + pathname);
+    }
     if (!filePath.startsWith(clientDir)) {
       res.writeHead(404);
       return res.end('Not found');
