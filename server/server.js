@@ -188,6 +188,28 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, { ok: true });
   }
 
+    // --- Business license lookup ---
+    if (req.method === 'GET' && pathname === '/v1/business-license') {
+      const name = query.name;
+      const state = query.state;
+      if (!name || !state) {
+        return send(res, 400, { error: 'name and state required' });
+      }
+      const apiKey = process.env.BUSINESS_LICENSE_API_KEY;
+      if (!apiKey) {
+        return send(res, 501, { error: 'license lookup not configured' });
+      }
+      const endpoint = `https://search-business-license.p.rapidapi.com/BusinessSearch?businessName=${encodeURIComponent(name)}&state=${encodeURIComponent(state)}`;
+      const r = await fetch(endpoint, {
+        headers: {
+          'X-RapidAPI-Key': apiKey,
+          'X-RapidAPI-Host': 'search-business-license.p.rapidapi.com'
+        }
+      });
+      const data = await r.json();
+      return send(res, r.status, data);
+    }
+
     // --- static files ---
     let filePath;
     if (pathname === '/') {

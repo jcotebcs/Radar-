@@ -195,3 +195,20 @@ async function loadInitial() {
 }
 
 loadInitial();
+
+// business license lookup
+document.getElementById('lookupLicense').onclick = async () => {
+  const name = document.getElementById('bizName').value;
+  const state = document.getElementById('bizState').value;
+  try {
+    const res = await fetch(`/v1/business-license?name=${encodeURIComponent(name)}&state=${encodeURIComponent(state)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      setStatus(data.error || 'Lookup failed');
+      return;
+    }
+    document.getElementById('licenseResult').textContent = JSON.stringify(data, null, 2);
+  } catch {
+    setStatus('Lookup failed');
+  }
+};
