@@ -168,7 +168,10 @@ const server = http.createServer(async (req, res) => {
     const id = pathname.split('/')[3];
     const tally = tallies.get(id);
     if (!tally) return send(res, 404, { error: 'unknown tally' });
-    tally.value = Math.max(0, tally.value - 1);
+    if (tally.value === 0) {
+      return send(res, 409, { error: 'tally cannot go below zero' });
+    }
+    tally.value -= 1;
     return send(res, 200, tally);
   }
   if (req.method === 'POST' && pathname.startsWith('/v1/tally/') && pathname.endsWith('/reset')) {

@@ -133,8 +133,13 @@ function addTallyToList(t) {
 
   async function update(path) {
     try {
-      const updated = await fetch(`/v1/tally/${t.id}/${path}`, { method: 'POST' }).then(r => r.json());
-      value.textContent = updated.value;
+      const res = await fetch(`/v1/tally/${t.id}/${path}`, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok) {
+        setStatus(data.error || 'Update failed');
+        return;
+      }
+      value.textContent = data.value;
     } catch {
       setStatus('Update failed');
     }
