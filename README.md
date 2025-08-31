@@ -43,3 +43,18 @@ Then call:
 ```
 curl "http://localhost:3000/v1/business-license?name=ACME&state=CA"
 ```
+
+## Professional License Verification
+
+The app can verify professional licenses via RapidAPI. Configure the key and call the endpoint:
+
+```
+export LICENSEVERIFY_API_KEY="79eed379e8mshdbea58fa8491487p150935jsna2349478600f"
+node server/server.js
+```
+
+Then query:
+
+```
+curl "http://localhost:3000/v1/license-verify?license=12345&state=CA"
+```

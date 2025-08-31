@@ -210,6 +210,32 @@ const server = http.createServer(async (req, res) => {
       return send(res, r.status, data);
     }
 
+    // --- Professional license verification ---
+    if (req.method === 'GET' && pathname === '/v1/license-verify') {
+      const license = query.license;
+      const state = query.state;
+      if (!license || !state) {
+        return send(res, 400, { error: 'license and state required' });
+      }
+      const apiKey = process.env.LICENSEVERIFY_API_KEY;
+      if (!apiKey) {
+        return send(res, 501, { error: 'license verification not configured' });
+      }
+      const endpoint = `https://state-license-verification-api.p.rapidapi.com/StateLicenseVerification?license=${encodeURIComponent(license)}&state=${encodeURIComponent(state)}`;
+      try {
+        const r = await fetch(endpoint, {
+          headers: {
+            'X-RapidAPI-Key': apiKey,
+            'X-RapidAPI-Host': 'state-license-verification-api.p.rapidapi.com'
+          }
+        });
+        const data = await r.json();
+        return send(res, r.status, data);
+      } catch {
+        return send(res, 502, { error: 'license verification request failed' });
+      }
+    }
+
     // --- static files ---
     let filePath;
     if (pathname === '/') {

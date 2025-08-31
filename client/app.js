@@ -212,3 +212,20 @@ document.getElementById('lookupLicense').onclick = async () => {
     setStatus('Lookup failed');
   }
 };
+
+// professional license verification
+document.getElementById('verifyLicense').onclick = async () => {
+  const number = document.getElementById('verifyNumber').value;
+  const state = document.getElementById('verifyState').value;
+  try {
+    const res = await fetch(`/v1/license-verify?license=${encodeURIComponent(number)}&state=${encodeURIComponent(state)}`);
+    const data = await res.json();
+    if (!res.ok) {
+      setStatus(data.error || 'Verification failed');
+      return;
+    }
+    document.getElementById('verifyResult').textContent = JSON.stringify(data, null, 2);
+  } catch {
+    setStatus('Verification failed');
+  }
+};
