@@ -115,16 +115,35 @@ document.getElementById('addTally').onclick = async () => {
 
 function addTallyToList(t) {
   const li = document.createElement('li');
-  const btn = document.createElement('button');
-  btn.textContent = `${t.title}: ${t.value}`;
-  btn.onclick = async () => {
+  const label = document.createElement('span');
+  label.textContent = `${t.title}: `;
+  const value = document.createElement('span');
+  value.textContent = t.value;
+
+  async function update(path) {
     try {
-      const updated = await fetch(`/v1/tally/${t.id}/inc`, { method: 'POST' }).then(r => r.json());
-      btn.textContent = `${updated.title}: ${updated.value}`;
+      const updated = await fetch(`/v1/tally/${t.id}/${path}`, { method: 'POST' }).then(r => r.json());
+      value.textContent = updated.value;
     } catch {
-      setStatus('Increment failed');
+      setStatus('Update failed');
     }
-  };
-  li.appendChild(btn);
+  }
+
+  const incBtn = document.createElement('button');
+  incBtn.textContent = '+';
+  incBtn.setAttribute('aria-label', `Increment ${t.title}`);
+  incBtn.onclick = () => update('inc');
+
+  const decBtn = document.createElement('button');
+  decBtn.textContent = '-';
+  decBtn.setAttribute('aria-label', `Decrement ${t.title}`);
+  decBtn.onclick = () => update('dec');
+
+  const resetBtn = document.createElement('button');
+  resetBtn.textContent = 'reset';
+  resetBtn.setAttribute('aria-label', `Reset ${t.title}`);
+  resetBtn.onclick = () => update('reset');
+
+  li.append(label, value, incBtn, decBtn, resetBtn);
   document.getElementById('tallyList').appendChild(li);
 }

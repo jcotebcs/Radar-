@@ -20,12 +20,15 @@ function send(res, status, payload, type = 'application/json') {
 }
 
 function parseBody(req) {
-  return new Promise(resolve => {
+  return new Promise((resolve, reject) => {
     let body = '';
     req.on('data', chunk => (body += chunk));
     req.on('end', () => {
-      try { resolve(JSON.parse(body || '{}')); }
-      catch { resolve({}); }
+      try {
+        resolve(JSON.parse(body || '{}'));
+      } catch {
+        reject({ status: 400, payload: { error: 'invalid JSON' } });
+      }
     });
   });
 }
@@ -72,15 +75,27 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, Array.from(timers.values()));
   }
   if (pathname === '/v1/timers' && req.method === 'POST') {
-    const body = await parseBody(req);
+    let body;
+    try {
+      body = await parseBody(req);
+    } catch (err) {
+      return send(res, err.status, err.payload);
+    }
+    const duration = Number(body.duration);
+    if (!Number.isInteger(duration) || duration <= 0) {
+      return send(res, 400, { error: 'invalid duration' });
+    }
     const id = String(nextTimerId++);
-    timers.set(id, { id, title: body.title || `Timer ${id}`, duration: body.duration || 0, start: null, end: null });
+    timers.set(id, { id, title: body.title || `Timer ${id}`, duration, start: null, end: null });
     return send(res, 200, timers.get(id));
   }
   if (req.method === 'POST' && pathname.startsWith('/v1/timers/') && pathname.endsWith('/start')) {
     const id = pathname.split('/')[3];
     const timer = timers.get(id);
     if (!timer) return send(res, 404, { error: 'unknown timer' });
+    if (timer.start) {
+      return send(res, 409, { error: 'timer already running' });
+    }
     timer.start = Date.now();
     timer.end = timer.start + timer.duration * 1000;
     return send(res, 200, timer);
@@ -90,6 +105,7 @@ const server = http.createServer(async (req, res) => {
     const timer = timers.get(id);
     if (!timer) return send(res, 404, { error: 'unknown timer' });
     timer.start = null;
+    timer.end = null;
     return send(res, 200, timer);
   }
 
@@ -98,7 +114,12 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, Array.from(tallies.values()));
   }
   if (pathname === '/v1/tally' && req.method === 'POST') {
-    const body = await parseBody(req);
+    let body;
+    try {
+      body = await parseBody(req);
+    } catch (err) {
+      return send(res, err.status, err.payload);
+    }
     const id = String(nextTallyId++);
     tallies.set(id, { id, title: body.title || `Counter ${id}`, value: 0 });
     return send(res, 200, tallies.get(id));
@@ -108,6 +129,20 @@ const server = http.createServer(async (req, res) => {
     const tally = tallies.get(id);
     if (!tally) return send(res, 404, { error: 'unknown tally' });
     tally.value += 1;
+    return send(res, 200, tally);
+  }
+  if (req.method === 'POST' && pathname.startsWith('/v1/tally/') && pathname.endsWith('/dec')) {
+    const id = pathname.split('/')[3];
+    const tally = tallies.get(id);
+    if (!tally) return send(res, 404, { error: 'unknown tally' });
+    tally.value = Math.max(0, tally.value - 1);
+    return send(res, 200, tally);
+  }
+  if (req.method === 'POST' && pathname.startsWith('/v1/tally/') && pathname.endsWith('/reset')) {
+    const id = pathname.split('/')[3];
+    const tally = tallies.get(id);
+    if (!tally) return send(res, 404, { error: 'unknown tally' });
+    tally.value = 0;
     return send(res, 200, tally);
   }
 

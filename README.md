@@ -15,8 +15,8 @@ Then open `http://localhost:3000` in your browser.
 ## Features
 
 - Record audio and send to the server; the server responds with a mock BLUF summary.
-- Create, start, and stop a single timer.
-- Create tally counters and increment them.
+- Create timers with positive durations; start and stop them safely.
+- Create tally counters and adjust them with increment, decrement, or reset.
 
 This repository is a starting point for further development such as VOX detection,
 LLM integration, calendar publishing, and external API adapters.
