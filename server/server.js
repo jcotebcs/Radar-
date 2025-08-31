@@ -4,6 +4,8 @@ const path = require('path');
 const url = require('url');
 const { randomUUID } = require('crypto');
 
+const LOG_REQUESTS = process.env.LOG_REQUESTS === '1';
+
 // in-memory stores
 const recordings = new Map();
 const timers = new Map();
@@ -49,10 +51,16 @@ function parseBody(req) {
 }
 
 const server = http.createServer(async (req, res) => {
-  const parsed = url.parse(req.url, true);
-  const { pathname, query } = parsed;
+  if (LOG_REQUESTS) {
+    res.on('finish', () => {
+      console.log(`${req.method} ${req.url} ${res.statusCode}`);
+    });
+  }
+  try {
+    const parsed = url.parse(req.url, true);
+    const { pathname, query } = parsed;
 
-  // --- Ingest endpoints ---
+    // --- Ingest endpoints ---
     if (req.method === 'POST' && pathname === '/v1/ingest/init') {
       const id = randomUUID();
       recordings.set(id, []);
@@ -88,25 +96,25 @@ const server = http.createServer(async (req, res) => {
       });
     }
 
-  // --- Timer endpoints ---
-  if (pathname === '/v1/timers' && req.method === 'GET') {
-    return send(res, 200, Array.from(timers.values()));
-  }
-  if (pathname === '/v1/timers' && req.method === 'POST') {
-    let body;
-    try {
-      body = await parseBody(req);
-    } catch (err) {
-      return send(res, err.status, err.payload);
+    // --- Timer endpoints ---
+    if (pathname === '/v1/timers' && req.method === 'GET') {
+      return send(res, 200, Array.from(timers.values()));
     }
-    const duration = Number(body.duration);
-    if (!Number.isInteger(duration) || duration <= 0) {
-      return send(res, 400, { error: 'invalid duration' });
+    if (pathname === '/v1/timers' && req.method === 'POST') {
+      let body;
+      try {
+        body = await parseBody(req);
+      } catch (err) {
+        return send(res, err.status, err.payload);
+      }
+      const duration = Number(body.duration);
+      if (!Number.isInteger(duration) || duration <= 0) {
+        return send(res, 400, { error: 'invalid duration' });
+      }
+      const id = String(nextTimerId++);
+      timers.set(id, { id, title: body.title || `Timer ${id}`, duration, start: null, end: null });
+      return send(res, 200, timers.get(id));
     }
-    const id = String(nextTimerId++);
-    timers.set(id, { id, title: body.title || `Timer ${id}`, duration, start: null, end: null });
-    return send(res, 200, timers.get(id));
-  }
   if (req.method === 'POST' && pathname.startsWith('/v1/timers/') && pathname.endsWith('/start')) {
     const id = pathname.split('/')[3];
     const timer = timers.get(id);
@@ -133,21 +141,21 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, { ok: true });
   }
 
-  // --- Tally endpoints ---
-  if (pathname === '/v1/tally' && req.method === 'GET') {
-    return send(res, 200, Array.from(tallies.values()));
-  }
-  if (pathname === '/v1/tally' && req.method === 'POST') {
-    let body;
-    try {
-      body = await parseBody(req);
-    } catch (err) {
-      return send(res, err.status, err.payload);
+    // --- Tally endpoints ---
+    if (pathname === '/v1/tally' && req.method === 'GET') {
+      return send(res, 200, Array.from(tallies.values()));
     }
-    const id = String(nextTallyId++);
-    tallies.set(id, { id, title: body.title || `Counter ${id}`, value: 0 });
-    return send(res, 200, tallies.get(id));
-  }
+    if (pathname === '/v1/tally' && req.method === 'POST') {
+      let body;
+      try {
+        body = await parseBody(req);
+      } catch (err) {
+        return send(res, err.status, err.payload);
+      }
+      const id = String(nextTallyId++);
+      tallies.set(id, { id, title: body.title || `Counter ${id}`, value: 0 });
+      return send(res, 200, tallies.get(id));
+    }
   if (req.method === 'POST' && pathname.startsWith('/v1/tally/') && pathname.endsWith('/inc')) {
     const id = pathname.split('/')[3];
     const tally = tallies.get(id);
@@ -176,28 +184,39 @@ const server = http.createServer(async (req, res) => {
     return send(res, 200, { ok: true });
   }
 
-  // --- static files ---
-  let filePath = path.join(clientDir, pathname === '/' ? 'index.html' : pathname);
-  filePath = path.normalize(filePath);
-  if (!filePath.startsWith(clientDir)) {
-    res.writeHead(404);
-    return res.end('Not found');
-  }
-  fs.readFile(filePath, (err, data) => {
-    if (err) {
+    // --- static files ---
+    let filePath = path.join(clientDir, pathname === '/' ? 'index.html' : pathname);
+    filePath = path.normalize(filePath);
+    if (!filePath.startsWith(clientDir)) {
       res.writeHead(404);
-      res.end('Not found');
-    } else {
-      const ext = path.extname(filePath);
-      const type = {
-        '.html': 'text/html',
-        '.js': 'text/javascript',
-        '.css': 'text/css'
-      }[ext] || 'application/octet-stream';
-      send(res, 200, data, type);
+      return res.end('Not found');
     }
-  });
+    fs.readFile(filePath, (err, data) => {
+      if (err) {
+        res.writeHead(404);
+        res.end('Not found');
+      } else {
+        const ext = path.extname(filePath);
+        const type = {
+          '.html': 'text/html',
+          '.js': 'text/javascript',
+          '.css': 'text/css'
+        }[ext] || 'application/octet-stream';
+        send(res, 200, data, type);
+      }
+    });
+  } catch (err) {
+    handleError(res, err);
+  }
 });
+
+function handleError(res, err) {
+  const status = err && err.status ? err.status : 500;
+  const payload = err && err.payload ? err.payload : { error: 'internal error' };
+  if (!res.writableEnded) {
+    send(res, status, payload);
+  }
+}
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
