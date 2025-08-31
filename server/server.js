@@ -9,6 +9,9 @@ const timers = new Map();
 const tallies = new Map();
 let nextTimerId = 1;
 let nextTallyId = 1;
+const MAX_UPLOAD_SIZE = 1 * 1024 * 1024; // 1MB
+
+const clientDir = path.join(__dirname, '..', 'client');
 
 function send(res, status, payload, type = 'application/json') {
   res.writeHead(status, { 'Content-Type': type });
@@ -44,7 +47,13 @@ const server = http.createServer(async (req, res) => {
     const data = [];
     req.on('data', d => data.push(d));
     req.on('end', () => {
-      store.push(Buffer.concat(data));
+      const chunk = Buffer.concat(data);
+      const total = store.reduce((n, b) => n + b.length, 0) + chunk.length;
+      if (total > MAX_UPLOAD_SIZE) {
+        recordings.delete(id);
+        return send(res, 413, { error: 'upload too large' });
+      }
+      store.push(chunk);
       send(res, 200, { ok: true });
     });
     return;
@@ -103,7 +112,12 @@ const server = http.createServer(async (req, res) => {
   }
 
   // --- static files ---
-  const filePath = path.join(__dirname, '..', 'client', pathname === '/' ? 'index.html' : pathname);
+  let filePath = path.join(clientDir, pathname === '/' ? 'index.html' : pathname);
+  filePath = path.normalize(filePath);
+  if (!filePath.startsWith(clientDir)) {
+    res.writeHead(404);
+    return res.end('Not found');
+  }
   fs.readFile(filePath, (err, data) => {
     if (err) {
       res.writeHead(404);

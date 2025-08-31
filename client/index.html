@@ -2,11 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Radar Notes</title>
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
   <h1>Radar Notes</h1>
+
+  <div id="status" role="alert"></div>
 
   <section id="recorder">
     <h2>Audio Recorder</h2>
@@ -15,7 +18,9 @@
 
   <section id="timer">
     <h2>Timer</h2>
+    <label for="timerTitle" class="visually-hidden">Timer title</label>
     <input id="timerTitle" placeholder="Title">
+    <label for="timerDuration" class="visually-hidden">Duration in seconds</label>
     <input id="timerDuration" type="number" placeholder="Duration (sec)">
     <button id="createTimer">Create</button>
     <div id="timerDisplay"></div>
@@ -25,6 +30,7 @@
 
   <section id="tally">
     <h2>Tally Counters</h2>
+    <label for="tallyTitle" class="visually-hidden">Counter name</label>
     <input id="tallyTitle" placeholder="Counter name">
     <button id="addTally">Add</button>
     <ul id="tallyList"></ul>
