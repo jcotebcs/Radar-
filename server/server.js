@@ -200,14 +200,18 @@ const server = http.createServer(async (req, res) => {
         return send(res, 501, { error: 'license lookup not configured' });
       }
       const endpoint = `https://search-business-license.p.rapidapi.com/BusinessSearch?businessName=${encodeURIComponent(name)}&state=${encodeURIComponent(state)}`;
-      const r = await fetch(endpoint, {
-        headers: {
-          'X-RapidAPI-Key': apiKey,
-          'X-RapidAPI-Host': 'search-business-license.p.rapidapi.com'
-        }
-      });
-      const data = await r.json();
-      return send(res, r.status, data);
+      try {
+        const r = await fetch(endpoint, {
+          headers: {
+            'X-RapidAPI-Key': apiKey,
+            'X-RapidAPI-Host': 'search-business-license.p.rapidapi.com'
+          }
+        });
+        const data = await r.json();
+        return send(res, r.status, data);
+      } catch {
+        return send(res, 502, { error: 'business license lookup failed' });
+      }
     }
 
     // --- Professional license verification ---

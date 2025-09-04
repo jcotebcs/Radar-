@@ -44,6 +44,8 @@ Then call:
 curl "http://localhost:3000/v1/business-license?name=ACME&state=CA"
 ```
 
+If the upstream service is unreachable, the server responds with a `502` error.
+
 ## Professional License Verification
 
 The app can verify professional licenses via RapidAPI. Configure the key and call the endpoint:
