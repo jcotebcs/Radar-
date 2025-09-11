@@ -3,70 +3,100 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#ffffff">
-  <title>Radar Notes</title>
+  <meta name="theme-color" content="#007bff">
+  <meta name="description" content="Voice-first note-taking and information-structuring system for Police Radar">
+  <meta name="author" content="Radar Notes">
+  <title>Radar Notes - Voice Recording & Analysis</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="/manifest.json">
 </head>
 <body>
-  <h1>Radar Notes</h1>
-  <section id="controls">
-    <label for="audioInput">Microphone:</label>
-    <select id="audioInput"></select>
-    <button id="recordBtn">Start Recording</button>
-    <button id="tagBtn">Add Tag</button>
-    <button id="printBtn">Print</button>
-  </section>
+  <header>
+    <h1>Radar Notes</h1>
+    <p>Voice-first note-taking and analysis system</p>
+  </header>
+  
+  <main>
+    <section id="controls" aria-label="Recording Controls">
+      <label for="audioInput">Microphone:</label>
+      <select id="audioInput" aria-describedby="audio-help"></select>
+      <small id="audio-help">Select your preferred microphone or Bluetooth device</small>
+      
+      <button id="recordBtn" aria-describedby="record-help" type="button">Start Recording</button>
+      <small id="record-help">Space, Enter, or R to toggle recording</small>
+      
+      <button id="tagBtn" aria-describedby="tag-help" type="button">Add Tag</button>
+      <small id="tag-help">T or # to add tags during recording</small>
+      
+      <button id="printBtn" type="button">Print</button>
+    </section>
 
-  <section id="tags">
-    <h2>Tags</h2>
-    <ul id="tagList"></ul>
-  </section>
+    <section id="consent" aria-label="Recording Consent" style="background: #fff3cd; padding: 1rem; border: 1px solid #ffeaa7; border-radius: 4px; margin-bottom: 1rem;">
+      <p><strong>⚠️ Recording Notice:</strong> This application records audio when you press "Start Recording". 
+      Recordings are stored locally on this device. You can delete recordings at any time. 
+      By using this app, you consent to audio recording for note-taking purposes.</p>
+    </section>
 
-  <section id="camera">
-    <h2>Camera</h2>
-    <label for="videoInput">Camera:</label>
-    <select id="videoInput"></select>
-    <button id="cameraBtn">Start Camera</button>
-    <div>
-      <input id="cameraUrl" placeholder="Remote camera URL">
-      <button id="loadCameraUrl">Load URL</button>
-    </div>
-    <video id="preview" autoplay playsinline></video>
-  </section>
+    <section id="tags" aria-label="Recording Tags">
+      <h2>Tags</h2>
+      <ul id="tagList" role="list" aria-live="polite"></ul>
+    </section>
 
-  <section id="timer">
-    <h2>Timer</h2>
-    <input id="timerTitle" placeholder="Title">
-    <input id="timerSeconds" type="number" placeholder="Seconds">
-    <button id="startTimer">Start</button>
-    <button id="stopTimer">Stop</button>
-    <div id="timerDisplay"></div>
-  </section>
+    <section id="camera" aria-label="Camera Preview">
+      <h2>Camera</h2>
+      <label for="videoInput">Camera:</label>
+      <select id="videoInput"></select>
+      <button id="cameraBtn" type="button">Start Camera</button>
+      <div>
+        <label for="cameraUrl">Remote camera URL:</label>
+        <input id="cameraUrl" placeholder="http://example.com/stream.mjpg" type="url" aria-describedby="camera-url-help">
+        <small id="camera-url-help">Enter IP camera stream URL</small>
+        <button id="loadCameraUrl" type="button">Load URL</button>
+      </div>
+      <video id="preview" autoplay playsinline aria-label="Camera preview"></video>
+    </section>
 
-  <section id="tally">
-    <h2>Tally</h2>
-    <input id="tallyName" placeholder="Counter name">
-    <button id="addCounter">Add Counter</button>
-    <ul id="tallyList"></ul>
-  </section>
+    <section id="timer" aria-label="Timer Controls">
+      <h2>Timer</h2>
+      <label for="timerTitle">Timer title:</label>
+      <input id="timerTitle" placeholder="Timer name" maxlength="100">
+      
+      <label for="timerSeconds">Duration (seconds):</label>
+      <input id="timerSeconds" type="number" placeholder="60" min="1" max="86400" aria-describedby="timer-help">
+      <small id="timer-help">Maximum 24 hours (86400 seconds)</small>
+      
+      <button id="startTimer" type="button">Start Timer</button>
+      <button id="stopTimer" type="button">Stop Timer</button>
+      <div id="timerDisplay" aria-live="polite"></div>
+    </section>
 
-  <section id="contacts">
-    <h2>Contacts</h2>
-    <ul id="contactList"></ul>
-  </section>
+    <section id="tally" aria-label="Tally Counters">
+      <h2>Tally Counters</h2>
+      <label for="tallyName">Counter name:</label>
+      <input id="tallyName" placeholder="Counter name" maxlength="50">
+      <button id="addCounter" type="button">Add Counter</button>
+      <ul id="tallyList" role="list" aria-live="polite"></ul>
+    </section>
 
-  <section id="callLogs">
-    <h2>Call Logs</h2>
-    <ul id="callLogList"></ul>
-  </section>
+    <section id="contacts" aria-label="Contacts">
+      <h2>Contacts</h2>
+      <ul id="contactList" role="list"></ul>
+    </section>
 
-  <section id="chat">
-    <h2>Chat with Radar Oriley</h2>
-    <div id="chatLog" class="chat-log"></div>
-    <input id="chatInput" placeholder="Type a message">
-    <button id="chatSend">Send</button>
-  </section>
+    <section id="callLogs" aria-label="Call History">
+      <h2>Call Logs</h2>
+      <ul id="callLogList" role="list"></ul>
+    </section>
+
+    <section id="chat" aria-label="Chat with Radar Oriley">
+      <h2>Chat with Radar Oriley</h2>
+      <div id="chatLog" class="chat-log" role="log" aria-live="polite" aria-label="Chat conversation"></div>
+      <label for="chatInput">Message:</label>
+      <input id="chatInput" placeholder="Type a message..." maxlength="500" aria-describedby="chat-help">
+      <small id="chat-help">Press Enter to send</small>
+      <button id="chatSend" type="button">Send</button>
+    </section>
+  </main>
 
   <script src="app.js"></script>
 </body>

@@ -1,0 +1,38 @@
+{
+  "name": "radar-notes",
+  "version": "1.0.0",
+  "description": "Voice-first note-taking and information-structuring system for Police Radar application",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "validate": "node validate.js",
+    "test": "node validate.js",
+    "health": "curl -s http://localhost:3000/api/health | jq .",
+    "clean": "rm -rf data/recordings/* validation-report.json"
+  },
+  "keywords": [
+    "voice",
+    "notes",
+    "radar",
+    "police",
+    "pwa",
+    "recording",
+    "transcription"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=14.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jcotebcs/Radar-.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jcotebcs/Radar-/issues"
+  },
+  "homepage": "https://github.com/jcotebcs/Radar-#readme"
+}
