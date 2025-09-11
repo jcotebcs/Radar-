@@ -1,0 +1,35 @@
+{
+  "tallies": {
+    "Test Counter": 1
+  },
+  "contacts": [
+    {
+      "id": 1,
+      "name": "Alice",
+      "phone": "+15551234567"
+    },
+    {
+      "id": 2,
+      "name": "Bob",
+      "phone": "+15557654321"
+    }
+  ],
+  "callLogs": [
+    {
+      "id": 1,
+      "contact": "Alice",
+      "type": "incoming",
+      "time": 1757627590008,
+      "duration": 120
+    },
+    {
+      "id": 2,
+      "contact": "Bob",
+      "type": "outgoing",
+      "time": 1757624590008,
+      "duration": 240
+    }
+  ],
+  "timers": {},
+  "settings": {}
+}
