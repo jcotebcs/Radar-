@@ -1,0 +1,33 @@
+{
+  "name": "radar-notes",
+  "version": "1.0.0",
+  "description": "Radar Notes Application - Voice recording and note-taking PWA",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "prod": "NODE_ENV=production node server.js",
+    "docker:build": "docker build -t radar-notes .",
+    "docker:run": "docker run -p 8080:8080 -e NODE_ENV=production radar-notes",
+    "health-check": "curl -f http://localhost:3000/health || exit 1",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "pwa",
+    "voice-recording",
+    "notes",
+    "bluetooth",
+    "radar",
+    "progressive-web-app",
+    "nodejs",
+    "timer",
+    "tally-counter"
+  ],
+  "author": "",
+  "license": "ISC",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+  }
+}
