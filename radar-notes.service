@@ -1,0 +1,37 @@
+[Unit]
+Description=Radar Notes PWA Server
+Documentation=https://github.com/jcotebcs/Radar-
+After=network.target
+
+[Service]
+Type=simple
+User=radar
+Group=radar
+WorkingDirectory=/var/www/radar-notes
+ExecStart=/usr/bin/node server.js
+Restart=always
+RestartSec=10
+
+# Environment
+Environment=NODE_ENV=production
+Environment=PORT=3000
+Environment=HOST=0.0.0.0
+
+# Security
+NoNewPrivileges=true
+PrivateTmp=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/var/www/radar-notes/logs /var/www/radar-notes/backups
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=radar-notes
+
+# Resource limits
+LimitNOFILE=65536
+LimitNPROC=4096
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,48 @@
+{
+  "name": "radar-notes",
+  "version": "1.0.0",
+  "description": "Radar Notes PWA - Progressive Web App for note-taking with Bluetooth support",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "NODE_ENV=development node server.js",
+    "build": "npm run build:assets && npm run build:sw",
+    "build:assets": "node scripts/build.js",
+    "build:sw": "node scripts/build-sw.js",
+    "test": "echo \"No tests specified\" && exit 0",
+    "lint": "echo \"No linting configured\" && exit 0",
+    "deploy": "bash scripts/deploy.sh",
+    "docker:build": "docker build -t radar-notes .",
+    "docker:run": "docker run -p 3000:3000 radar-notes"
+  },
+  "keywords": [
+    "pwa",
+    "progressive-web-app",
+    "notes",
+    "bluetooth",
+    "recording",
+    "radar"
+  ],
+  "author": "Radar Notes Team",
+  "license": "MIT",
+  "dependencies": {
+    "dotenv": "^16.3.1",
+    "winston": "^3.11.0",
+    "compression": "^1.7.4",
+    "helmet": "^7.1.0"
+  },
+  "devDependencies": {
+    "terser": "^5.24.0",
+    "cssnano": "^6.0.1",
+    "postcss": "^8.4.32",
+    "html-minifier-terser": "^7.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jcotebcs/Radar-.git"
+  }
+}
