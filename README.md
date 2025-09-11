@@ -1,6 +1,6 @@
-# Radar Notes Prototype
+# radar
 
-This prototype demonstrates a simple Radar Notes client and server with basic Bluetooth-friendly controls.
+This prototype demonstrates a simple radar client and server with basic Bluetooth-friendly controls.
 
 ## Features
 

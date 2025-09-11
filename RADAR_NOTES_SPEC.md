@@ -1,4 +1,4 @@
-# Radar Notes Application Outline
+# radar Application Outline
 
 ## 1 Project overview & purpose
 
