@@ -2,6 +2,25 @@
 
 This prototype demonstrates a simple Radar Notes client and server with basic Bluetooth-friendly controls.
 
+## Quick Start
+
+### Local Development
+```bash
+npm start
+```
+Then open [http://localhost:3000](http://localhost:3000)
+
+### Production Deployment
+```bash
+npm run prod
+```
+
+### Docker Deployment
+```bash
+npm run docker:build
+npm run docker:run
+```
+
 ## Features
 
 - Select any available audio input, including Bluetooth microphones.
