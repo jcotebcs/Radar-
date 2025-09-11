@@ -5,16 +5,16 @@ WORKDIR /app
 # Copy package files
 COPY package*.json ./
 
-# Install dependencies
+# Install dependencies  
 RUN npm install --only=production
 
 # Copy application code
 COPY . .
 
-# Expose port
+# Expose port for Cloud Run
 EXPOSE 8080
 
-# Set environment variable for Cloud Run
+# Cloud Run sets PORT environment variable
 ENV PORT=8080
 
 # Start the application
