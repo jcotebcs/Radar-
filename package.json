@@ -1,0 +1,40 @@
+{
+  "name": "radar-notes",
+  "version": "1.0.0",
+  "description": "Voice-first note-taking and information-structuring system with PWA capabilities",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "echo \"No linter configured\" && exit 0"
+  },
+  "keywords": [
+    "pwa",
+    "voice-notes",
+    "recording",
+    "accessibility",
+    "radar"
+  ],
+  "author": "Radar Notes Team",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "cors": "^2.8.5",
+    "winston": "^3.11.0",
+    "dotenv": "^16.3.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=16.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jcotebcs/Radar-.git"
+  },
+  "bugs": {
+    "url": "https://github.com/jcotebcs/Radar-/issues"
+  },
+  "homepage": "https://github.com/jcotebcs/Radar-#readme"
+}

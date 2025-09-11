@@ -5,8 +5,86 @@ let tags = [];
 let pressedButtons = [];
 let chatLog = [];
 
+// Permission status tracking
+let permissionsGranted = {
+  microphone: false,
+  camera: false
+};
+
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js').catch(console.error);
+  navigator.serviceWorker.register('/sw.js').then(registration => {
+    console.log('Service Worker registered successfully:', registration);
+  }).catch(error => {
+    console.error('Service Worker registration failed:', error);
+  });
+}
+
+// Check and request permissions on load
+async function checkPermissions() {
+  try {
+    // Check microphone permission
+    const micPermission = await navigator.permissions.query({ name: 'microphone' });
+    permissionsGranted.microphone = micPermission.state === 'granted';
+    
+    // Check camera permission
+    const cameraPermission = await navigator.permissions.query({ name: 'camera' });
+    permissionsGranted.camera = cameraPermission.state === 'granted';
+    
+    console.log('Permissions status:', permissionsGranted);
+    updatePermissionUI();
+    
+    // Listen for permission changes
+    micPermission.addEventListener('change', () => {
+      permissionsGranted.microphone = micPermission.state === 'granted';
+      updatePermissionUI();
+    });
+    
+    cameraPermission.addEventListener('change', () => {
+      permissionsGranted.camera = cameraPermission.state === 'granted';
+      updatePermissionUI();
+    });
+    
+  } catch (error) {
+    console.log('Permissions API not supported, will request on first use');
+  }
+}
+
+function updatePermissionUI() {
+  const micStatus = document.getElementById('micPermissionStatus');
+  const cameraStatus = document.getElementById('cameraPermissionStatus');
+  
+  if (micStatus) {
+    micStatus.textContent = permissionsGranted.microphone ? '✓ Granted' : '✗ Not granted';
+    micStatus.className = permissionsGranted.microphone ? 'permission-granted' : 'permission-denied';
+  }
+  
+  if (cameraStatus) {
+    cameraStatus.textContent = permissionsGranted.camera ? '✓ Granted' : '✗ Not granted';
+    cameraStatus.className = permissionsGranted.camera ? 'permission-granted' : 'permission-denied';
+  }
+}
+
+async function requestPermissions() {
+  try {
+    // Request microphone permission
+    await navigator.mediaDevices.getUserMedia({ audio: true }).then(stream => {
+      stream.getTracks().forEach(track => track.stop());
+      permissionsGranted.microphone = true;
+    });
+    
+    // Request camera permission
+    await navigator.mediaDevices.getUserMedia({ video: true }).then(stream => {
+      stream.getTracks().forEach(track => track.stop());
+      permissionsGranted.camera = true;
+    });
+    
+    updatePermissionUI();
+    initDevices();
+    
+  } catch (error) {
+    console.error('Permission request failed:', error);
+    alert('Camera and microphone permissions are required for full functionality.');
+  }
 }
 
 async function populateAudioInputs() {
@@ -355,4 +433,13 @@ async function sendChat() {
 document.getElementById('chatSend')?.addEventListener('click', sendChat);
 document.getElementById('chatInput')?.addEventListener('keydown', e => {
   if (e.key === 'Enter') sendChat();
+});
+
+// Add permission request button event listener
+document.getElementById('requestPermissions')?.addEventListener('click', requestPermissions);
+
+// Initialize permissions check when page loads
+window.addEventListener('load', () => {
+  checkPermissions();
+  initDevices();
 });

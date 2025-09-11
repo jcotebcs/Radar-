@@ -10,6 +10,16 @@
 </head>
 <body>
   <h1>Radar Notes</h1>
+  
+  <section id="permissions">
+    <h2>Permissions</h2>
+    <div>
+      <span>Microphone: <span id="micPermissionStatus">Checking...</span></span>
+      <span>Camera: <span id="cameraPermissionStatus">Checking...</span></span>
+      <button id="requestPermissions">Request Permissions</button>
+    </div>
+  </section>
+
   <section id="controls">
     <label for="audioInput">Microphone:</label>
     <select id="audioInput"></select>

@@ -2,6 +2,45 @@ body {
   font-family: sans-serif;
   margin: 2rem;
 }
+
+#permissions {
+  background: #f5f5f5;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+#permissions div {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.permission-granted {
+  color: green;
+  font-weight: bold;
+}
+
+.permission-denied {
+  color: red;
+  font-weight: bold;
+}
+
+#requestPermissions {
+  background: #007bff;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 3px;
+  cursor: pointer;
+}
+
+#requestPermissions:hover {
+  background: #0056b3;
+}
+
 #controls {
   display: flex;
   align-items: center;
