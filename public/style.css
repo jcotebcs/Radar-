@@ -1,19 +1,146 @@
 body {
-  font-family: sans-serif;
-  margin: 2rem;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  margin: 0;
+  padding: 2rem;
+  background-color: #f5f5f5;
+  color: #333;
 }
+
+h1 {
+  color: #2c3e50;
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+h2 {
+  color: #34495e;
+  border-bottom: 2px solid #3498db;
+  padding-bottom: 0.5rem;
+}
+
+section {
+  background: white;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 #controls {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 1rem;
   margin-bottom: 1rem;
+  flex-wrap: wrap;
 }
-#recordBtn.recording {
-  background: red;
+
+#controls label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+button {
+  background: #3498db;
   color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+  transition: all 0.3s ease;
 }
+
+button:hover {
+  background: #2980b9;
+  transform: translateY(-1px);
+}
+
+button:active {
+  transform: translateY(0);
+}
+
+select, input[type="text"], input[type="number"] {
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.9rem;
+}
+
+#recordBtn.recording {
+  background: #e74c3c;
+  color: white;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.7; }
+  100% { opacity: 1; }
+}
+
+.recording-item, .note-item, .task-item, .event-item {
+  background: #f8f9fa;
+  border: 1px solid #e9ecef;
+  border-radius: 6px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  transition: box-shadow 0.3s ease;
+}
+
+.recording-item:hover, .note-item:hover, .task-item:hover, .event-item:hover {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.recording-item h4, .note-item h4, .task-item .task-title, .event-item h4 {
+  margin: 0 0 0.5rem 0;
+  color: #2c3e50;
+}
+
+.task-item {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.task-item label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 500;
+}
+
+.task-description {
+  color: #666;
+  font-size: 0.9rem;
+  margin: 0;
+}
+
+.task-due {
+  color: #e67e22;
+  font-size: 0.85rem;
+  font-weight: 500;
+  margin: 0;
+}
+
+.task-priority {
+  font-size: 0.8rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin: 0;
+}
+
+.task-priority {
+  color: #95a5a6;
+}
+
 #tagList li {
-  margin-bottom: 0.25rem;
+  background: #ecf0f1;
+  padding: 0.25rem 0.5rem;
+  border-radius: 12px;
+  display: inline-block;
+  margin: 0.25rem 0.25rem 0.25rem 0;
+  font-size: 0.8rem;
 }
 
 #camera {
@@ -23,6 +150,7 @@ body {
   max-width: 100%;
   height: auto;
   margin-top: 0.5rem;
+  border-radius: 6px;
 }
 
 #timer, #tally, #contacts, #callLogs {
@@ -30,11 +158,17 @@ body {
 }
 
 #tallyList li {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
 }
 
 #contactList li, #callLogList li {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  background: #f8f9fa;
+  border-radius: 4px;
 }
 
 #chat {
@@ -42,9 +176,53 @@ body {
 }
 
 .chat-log {
-  border: 1px solid #ccc;
-  padding: 0.5rem;
-  height: 150px;
+  border: 1px solid #ddd;
+  padding: 1rem;
+  height: 200px;
   overflow-y: auto;
+  margin-bottom: 1rem;
+  background: #fafafa;
+  border-radius: 6px;
+}
+
+.chat-log div {
   margin-bottom: 0.5rem;
+  padding: 0.5rem;
+  border-radius: 4px;
+}
+
+.chat-log div:nth-child(odd) {
+  background: #e3f2fd;
+}
+
+.recording-notification {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive design */
+@media (max-width: 768px) {
+  body {
+    padding: 1rem;
+  }
+  
+  #controls {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  button, select, input {
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
 }

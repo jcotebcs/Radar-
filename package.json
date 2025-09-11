@@ -1,0 +1,18 @@
+{
+  "name": "radar-notes",
+  "version": "1.0.0",
+  "description": "Comprehensive personal assistant and note taking app with voice recording",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "uuid": "^9.0.0",
+    "multer": "^1.4.5-lts.1",
+    "form-data": "^4.0.0"
+  },
+  "keywords": ["voice", "notes", "assistant", "recording", "pwa"],
+  "author": "",
+  "license": "MIT"
+}
