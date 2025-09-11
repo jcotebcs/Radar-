@@ -25,7 +25,7 @@ body {
   margin-top: 0.5rem;
 }
 
-#timer, #tally, #contacts, #callLogs {
+#timer, #tally, #contacts, #callLogs, #integrations {
   margin-top: 1rem;
 }
 
@@ -47,4 +47,84 @@ body {
   height: 150px;
   overflow-y: auto;
   margin-bottom: 0.5rem;
+}
+
+/* Integration Styles */
+.integration-panel {
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  background-color: #f9f9f9;
+}
+
+.integration-panel h3 {
+  margin-top: 0;
+  color: #333;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 0.5rem;
+}
+
+.integration-panel button {
+  margin: 0.25rem;
+  padding: 0.5rem 1rem;
+  background-color: #007cba;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.integration-panel button:hover {
+  background-color: #005a8b;
+}
+
+.integration-panel button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.integration-panel input {
+  margin: 0.25rem;
+  padding: 0.5rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 200px;
+}
+
+#authStatus {
+  margin-bottom: 0.5rem;
+  font-weight: bold;
+  color: #666;
+}
+
+#googleFeatures {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #ddd;
+}
+
+#exportOptions button {
+  background-color: #28a745;
+}
+
+#exportOptions button:hover {
+  background-color: #1e7e34;
+}
+
+#squareIntegration button {
+  background-color: #3f51b5;
+}
+
+#squareIntegration button:hover {
+  background-color: #303f9f;
+}
+
+#notionIntegration button {
+  background-color: #000;
+}
+
+#notionIntegration button:hover {
+  background-color: #333;
 }
