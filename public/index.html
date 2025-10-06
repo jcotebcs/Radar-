@@ -61,6 +61,44 @@
     <ul id="callLogList"></ul>
   </section>
 
+  <section id="integrations">
+    <h2>Integrations</h2>
+    
+    <div id="googleIntegration" class="integration-panel">
+      <h3>Google Services</h3>
+      <div id="authStatus">Not authenticated</div>
+      <button id="googleAuth">Connect Google Account</button>
+      <div id="googleFeatures" style="display:none;">
+        <button id="createCalendarEvent">Create Calendar Event</button>
+        <button id="uploadToDrive">Upload to Drive</button>
+        <button id="sendEmail">Send Email</button>
+        <button id="viewCalendar">View Calendar</button>
+      </div>
+    </div>
+
+    <div id="notionIntegration" class="integration-panel">
+      <h3>Notion</h3>
+      <input id="notionDatabase" placeholder="Notion Database ID">
+      <button id="createNotionPage">Create Notion Page</button>
+      <button id="searchNotion">Search Notion</button>
+    </div>
+
+    <div id="squareIntegration" class="integration-panel">
+      <h3>Square (Payments)</h3>
+      <button id="createPayment">Create Payment</button>
+      <button id="viewTransactions">View Transactions</button>
+    </div>
+
+    <div id="exportOptions" class="integration-panel">
+      <h3>Export & Share</h3>
+      <button id="exportJSON">Export as JSON</button>
+      <button id="exportCSV">Export as CSV</button>
+      <button id="exportMarkdown">Export as Markdown</button>
+      <button id="exportCalendar">Export Calendar (ICS)</button>
+      <button id="shareLink">Generate Share Link</button>
+    </div>
+  </section>
+
   <section id="chat">
     <h2>Chat with Radar Oriley</h2>
     <div id="chatLog" class="chat-log"></div>
