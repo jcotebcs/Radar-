@@ -3,70 +3,83 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="theme-color" content="#ffffff">
+  <meta name="theme-color" content="#2563eb">
   <title>Radar Notes</title>
   <link rel="stylesheet" href="style.css">
   <link rel="manifest" href="/manifest.json">
 </head>
 <body>
-  <h1>Radar Notes</h1>
-  <section id="controls">
-    <label for="audioInput">Microphone:</label>
-    <select id="audioInput"></select>
-    <button id="recordBtn">Start Recording</button>
-    <button id="tagBtn">Add Tag</button>
-    <button id="printBtn">Print</button>
-  </section>
+  <div class="container">
+    <h1>📡 Radar Notes</h1>
+    
+    <section id="controls">
+      <label for="audioInput">🎤 Microphone:</label>
+      <select id="audioInput"></select>
+      <button id="recordBtn">🔴 Start Recording</button>
+      <button id="tagBtn" class="secondary">🏷️ Add Tag</button>
+      <button id="printBtn" class="secondary">🖨️ Print</button>
+    </section>
 
-  <section id="tags">
-    <h2>Tags</h2>
-    <ul id="tagList"></ul>
-  </section>
+    <div class="sections-grid">
+      <section id="tags">
+        <h2>🏷️ Tags</h2>
+        <ul id="tagList"></ul>
+      </section>
 
-  <section id="camera">
-    <h2>Camera</h2>
-    <label for="videoInput">Camera:</label>
-    <select id="videoInput"></select>
-    <button id="cameraBtn">Start Camera</button>
-    <div>
-      <input id="cameraUrl" placeholder="Remote camera URL">
-      <button id="loadCameraUrl">Load URL</button>
+      <section id="timer">
+        <h2>⏱️ Timer</h2>
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+          <input id="timerTitle" placeholder="Timer title">
+          <input id="timerSeconds" type="number" placeholder="Seconds" min="1">
+          <button id="startTimer" class="success">▶️ Start</button>
+          <button id="stopTimer" class="danger">⏹️ Stop</button>
+        </div>
+        <div id="timerDisplay">No active timer</div>
+      </section>
+
+      <section id="tally">
+        <h2>📊 Tally Counters</h2>
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+          <input id="tallyName" placeholder="Counter name">
+          <button id="addCounter" class="success">➕ Add Counter</button>
+        </div>
+        <ul id="tallyList"></ul>
+      </section>
+
+      <section id="contacts">
+        <h2>👥 Contacts</h2>
+        <ul id="contactList"></ul>
+      </section>
+
+      <section id="callLogs">
+        <h2>📞 Call Logs</h2>
+        <ul id="callLogList"></ul>
+      </section>
+
+      <section id="camera">
+        <h2>📹 Camera</h2>
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap; align-items: center;">
+          <label for="videoInput">Camera:</label>
+          <select id="videoInput"></select>
+          <button id="cameraBtn" class="success">📷 Start Camera</button>
+        </div>
+        <div style="display: flex; gap: 0.5rem; margin-bottom: 1rem; flex-wrap: wrap;">
+          <input id="cameraUrl" placeholder="Remote camera URL" style="flex: 1; min-width: 200px;">
+          <button id="loadCameraUrl" class="secondary">🔗 Load URL</button>
+        </div>
+        <video id="preview" autoplay playsinline style="display: none;"></video>
+      </section>
     </div>
-    <video id="preview" autoplay playsinline></video>
-  </section>
 
-  <section id="timer">
-    <h2>Timer</h2>
-    <input id="timerTitle" placeholder="Title">
-    <input id="timerSeconds" type="number" placeholder="Seconds">
-    <button id="startTimer">Start</button>
-    <button id="stopTimer">Stop</button>
-    <div id="timerDisplay"></div>
-  </section>
-
-  <section id="tally">
-    <h2>Tally</h2>
-    <input id="tallyName" placeholder="Counter name">
-    <button id="addCounter">Add Counter</button>
-    <ul id="tallyList"></ul>
-  </section>
-
-  <section id="contacts">
-    <h2>Contacts</h2>
-    <ul id="contactList"></ul>
-  </section>
-
-  <section id="callLogs">
-    <h2>Call Logs</h2>
-    <ul id="callLogList"></ul>
-  </section>
-
-  <section id="chat">
-    <h2>Chat with Radar Oriley</h2>
-    <div id="chatLog" class="chat-log"></div>
-    <input id="chatInput" placeholder="Type a message">
-    <button id="chatSend">Send</button>
-  </section>
+    <section id="chat">
+      <h2>💬 Chat with Radar Oriley</h2>
+      <div id="chatLog" class="chat-log"></div>
+      <div style="display: flex; gap: 0.5rem; align-items: center;">
+        <input id="chatInput" placeholder="Type a message..." style="flex: 1;">
+        <button id="chatSend">📤 Send</button>
+      </div>
+    </section>
+  </div>
 
   <script src="app.js"></script>
 </body>

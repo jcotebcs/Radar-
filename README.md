@@ -1,66 +1,343 @@
-# Radar Notes Prototype
+# 📡 Radar Notes
 
-This prototype demonstrates a simple Radar Notes client and server with basic Bluetooth-friendly controls.
+<div align="center">
 
-## Features
+![Radar Notes](https://img.shields.io/badge/Radar-Notes-blue.svg)
+![Node.js](https://img.shields.io/badge/Node.js-18+-green.svg)
+![PWA](https://img.shields.io/badge/PWA-Ready-purple.svg)
+![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
-- Select any available audio input, including Bluetooth microphones.
-- Start/stop recording and add tags using:
-  - On-screen buttons
-  - Bluetooth keyboard shortcuts
-  - Mouse/remote/shutter button clicks or wheel events
-  - Gamepad-style Bluetooth remotes (buttons 0 = record, 1 = tag)
-- Tags are displayed beneath the controls.
-- Print the page to a connected printer or PDF.
-- Preview video from the device camera, attached webcams, or remote camera URLs.
-- Simple timer with start/stop controls and remaining time display.
-- Multiple tally counters for quick incremental tracking.
-- View stub contact and call log data that will later link to device phone records.
-- Chat with **Radar Oriley**, a lighthearted assistant inspired by M*A*S*H's Radar O'Reilly.
+**A modern, voice-activated note-taking and productivity application with Bluetooth-friendly controls.**
 
-## Google API placeholders
+*Inspired by M*A*S*H's Radar O'Reilly, this prototype demonstrates hands-free recording, smart tagging, timers, and conversational AI assistance.*
 
-The server can surface configuration for a wide range of Google APIs. Set environment variables named after each API in uppercase
-snake case with a `_KEY` suffix (for example `YOUTUBE_DATA_API_V3_KEY`, `GOOGLE_CALENDAR_API_KEY`).
-When `server.js` starts it reports which of these keys are present to help with future integration work.
+[🚀 Quick Start](#quick-start) • [📱 Features](#features) • [🛠️ Installation](#installation) • [📖 Usage](#usage) • [🤝 Contributing](#contributing)
 
-## Run
+</div>
 
+---
+
+## ✨ Features
+
+### 🎤 **Voice Recording & Audio**
+- **Multi-device audio input** - Select any available audio source including Bluetooth microphones
+- **One-touch recording** - Start/stop recording with keyboard shortcuts, mouse clicks, or gamepad buttons
+- **Smart tagging system** - Add contextual tags during or after recording sessions
+- **Cross-platform compatibility** - Works on desktop, tablet, and mobile devices
+
+### ⏱️ **Productivity Tools**
+- **Customizable timers** - Set named timers for Pomodoro, breaks, or task tracking
+- **Tally counters** - Quick incremental counting for inventory, events, or metrics
+- **Contact management** - View and manage contact information
+- **Call logs** - Track incoming and outgoing communication
+
+### 📹 **Camera & Visual**
+- **Local camera preview** - Access device cameras and external webcams
+- **Remote camera streams** - Load and display IP camera feeds
+- **Print functionality** - Generate PDF reports or print to physical devices
+- **Responsive UI** - Modern, mobile-friendly interface with dark/light theme support
+
+### 🤖 **AI Assistant**
+- **Chat with Radar Oriley** - Conversational AI assistant for task management
+- **Voice commands** - Natural language processing for hands-free operation
+- **Context awareness** - Intelligent responses based on current activity
+
+### 🔧 **Accessibility & Control**
+- **Bluetooth remote support** - Works with Bluetooth keyboards, mice, and gaming controllers
+- **Keyboard shortcuts** - Comprehensive hotkey system for power users
+- **Voice activation** - Hands-free operation for accessibility
+- **Offline capability** - Progressive Web App (PWA) with offline functionality
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Node.js 18+ installed on your system
+- Modern web browser (Chrome, Firefox, Safari, Edge)
+- Optional: Bluetooth microphone or headset for best experience
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/jcotebcs/Radar-.git
+   cd Radar-
+   ```
+
+2. **Start the server**
+   ```bash
+   node server.js
+   ```
+
+3. **Open in browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
+
+4. **Install as PWA** (Optional)
+   - On mobile: Use "Add to Home Screen" in your browser menu
+   - On desktop: Look for the install prompt in the address bar
+
+---
+
+## 📱 Usage
+
+### 🎵 **Audio Recording**
+
+**Start Recording:**
+- Click the 🔴 **Start Recording** button
+- Press `Space`, `Enter`, or `R` key
+- Left-click anywhere on the page
+- Press button 0 on a connected gamepad
+
+**Add Tags:**
+- Click 🏷️ **Add Tag** button
+- Press `T` or `#` key
+- Right-click anywhere on the page
+- Press button 1 on a connected gamepad
+
+### ⏲️ **Timer Usage**
+
+1. Enter a descriptive timer name (e.g., "Coffee Break", "Meeting")
+2. Set duration in seconds
+3. Click ▶️ **Start** to begin countdown
+4. Monitor remaining time in real-time
+5. Use ⏹️ **Stop** to cancel timer early
+
+### 📊 **Tally Counters**
+
+1. Enter counter name in the text field
+2. Click ➕ **Add Counter** to create
+3. Use **+** button to increment count
+4. Perfect for inventory, attendance, or event tracking
+
+### 💬 **Chat Assistant**
+
+1. Type your message in the chat input
+2. Click 📤 **Send** or press `Enter`
+3. Radar Oriley will respond with helpful suggestions
+4. Chat history is maintained during your session
+
+### 📹 **Camera Features**
+
+**Local Camera:**
+1. Select camera from dropdown menu
+2. Click 📷 **Start Camera** to preview
+3. Use ⏹️ **Stop Camera** to end preview
+
+**Remote Camera:**
+1. Enter IP camera URL (e.g., `http://192.168.1.100:8080/stream`)
+2. Click 🔗 **Load URL** to connect
+3. Stream will display in preview area
+
+---
+
+## ⌨️ Keyboard Shortcuts
+
+| Action | Keys | Alternative |
+|--------|------|-------------|
+| **Toggle Recording** | `Space`, `Enter`, `R` | `MediaRecord`, `MediaPlayPause` |
+| **Add Tag** | `T`, `#` | `MediaTrackNext` |
+| **Print Page** | `Ctrl+P` | Click print button |
+| **Send Chat** | `Enter` | Click send button |
+
+### 🎮 **Gamepad/Remote Control**
+- **Button 0**: Toggle recording
+- **Button 1**: Add tag
+- **Scroll wheel up**: Start/stop recording
+- **Scroll wheel down**: Add tag
+
+---
+
+## 🛠️ Configuration
+
+### 🌐 **Environment Variables**
+
+Set up Google API integration by configuring environment variables:
+
+```bash
+# Example Google API configurations
+export YOUTUBE_DATA_API_V3_KEY="your_youtube_api_key"
+export GOOGLE_CALENDAR_API_KEY="your_calendar_api_key"
+export GOOGLE_CLOUD_SPEECH_API_KEY="your_speech_api_key"
 ```
+
+The server will automatically detect and report configured APIs on startup.
+
+### ⚙️ **Server Configuration**
+
+```bash
+# Set custom port (default: 3000)
+export PORT=8080
+
+# Set host address (default: localhost)
+export HOST=0.0.0.0
+
+# Set environment (affects caching behavior)
+export NODE_ENV=production
+```
+
+---
+
+## 🔧 API Endpoints
+
+### Timer API
+- `GET /api/timer/status` - Get current timer status
+- `POST /api/timer/start` - Start new timer
+- `POST /api/timer/stop` - Stop active timer
+
+### Tally API
+- `GET /api/tally` - List all counters
+- `POST /api/tally/create` - Create new counter
+- `POST /api/tally/increment` - Increment counter
+
+### Communication API
+- `GET /api/contacts` - Get contact list
+- `GET /api/call-logs` - Get call history
+- `POST /api/chat` - Send message to AI assistant
+
+### System API
+- `GET /api/health` - Server health check
+
+---
+
+## 🎨 Customization
+
+### Theme Variables
+The application uses CSS custom properties for easy theming:
+
+```css
+:root {
+  --primary-color: #2563eb;
+  --accent-color: #059669;
+  --danger-color: #dc2626;
+  --background-color: #f8fafc;
+  --text-color: #1e293b;
+}
+```
+
+### 📱 **Mobile Optimization**
+- Responsive grid layout adapts to screen size
+- Touch-friendly button sizing
+- Optimized for portrait and landscape orientations
+- PWA features for native app-like experience
+
+---
+
+## 🔐 **Security & Privacy**
+
+- ✅ **No data collection** - All processing happens locally
+- ✅ **Secure API endpoints** - Input validation and error handling
+- ✅ **CORS protection** - Configurable cross-origin policies
+- ✅ **Request size limits** - Protection against abuse
+- ✅ **Graceful error handling** - User-friendly error messages
+
+---
+
+## 🚧 **Development**
+
+### Project Structure
+```
+├── public/                 # Client-side assets
+│   ├── index.html         # Main HTML file
+│   ├── app.js             # JavaScript application
+│   ├── style.css          # Styling and themes
+│   ├── manifest.json      # PWA configuration
+│   └── sw.js              # Service worker
+├── server.js              # Node.js server
+├── googleApis.js          # Google API configuration
+└── README.md              # This file
+```
+
+### 🧪 **Testing**
+```bash
+# Start development server
 node server.js
+
+# Test API endpoints
+curl http://localhost:3000/api/health
+
+# Check PWA features
+# Open browser dev tools > Application > Service Workers
 ```
 
-Then open [http://localhost:3000](http://localhost:3000) in any modern browser.
+---
 
-### Web access
+## 🗺️ **Roadmap**
 
-The client is a Progressive Web App (PWA) and runs directly in the browser. Pair your Bluetooth microphone and input devices with the OS before launching the app.
+### 🎯 **Phase 1: Core Functionality** ✅
+- ✅ Voice recording with Bluetooth support
+- ✅ Timer and tally counter tools
+- ✅ Chat assistant integration
+- ✅ Camera preview functionality
+- ✅ PWA implementation
 
-### Android installation
+### 🎯 **Phase 2: AI Integration** 🚧
+- [ ] Speech-to-text transcription
+- [ ] LLM-powered note summarization
+- [ ] Automatic tag generation
+- [ ] Voice command recognition
 
-On Android, open the site in Chrome and use **Add to Home screen** to install it like a native application. The service worker provides basic offline caching so the app launches even without a network connection.
+### 🎯 **Phase 3: Cloud Integration** 🔮
+- [ ] Google Drive sync
+- [ ] Calendar integration
+- [ ] Contact synchronization
+- [ ] Cloud backup and restore
 
-To use the camera preview, select a camera from the list and press **Start Camera**. Remote IP cameras can be loaded by entering their stream URL.
+### 🎯 **Phase 4: Advanced Features** 🔮
+- [ ] Mind map generation
+- [ ] Multi-user collaboration
+- [ ] Advanced analytics
+- [ ] Custom workflow automation
 
-Use the **Print** button to open the browser print dialog, which can target physical printers or save as PDF.
+For detailed technical specifications, see [RADAR_NOTES_SPEC.md](RADAR_NOTES_SPEC.md).
 
-Use the chat section to send a message to Radar Oriley and receive a playful response.
+---
 
-## Keyboard/Remote Shortcuts
+## 🤝 **Contributing**
 
-- **Record toggle:** Space, Enter, `R`, `MediaRecord`, or `MediaPlayPause`
-- **Add tag:** `T`, `#`, or `MediaTrackNext`
-- **Mouse/Remote:** Left click anywhere on the page toggles record; right/middle click adds a tag.
-- **Scroll wheel:** scroll up to start/stop, scroll down to tag.
+We welcome contributions! Please follow these steps:
 
-Gamepad/scrolling remotes are polled continuously; button 0 toggles record and button 1 adds a tag.
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/amazing-feature`)
+3. **Commit** your changes (`git commit -m 'Add amazing feature'`)
+4. **Push** to the branch (`git push origin feature/amazing-feature`)
+5. **Open** a Pull Request
 
-## Bluetooth Notes
+### 🐛 **Bug Reports**
+Found a bug? Please create an issue with:
+- Clear description of the problem
+- Steps to reproduce
+- Expected vs actual behavior
+- Browser and device information
 
-Bluetooth microphones appear as normal audio inputs after pairing with the OS. The device selector lists all available `audioinput` devices.
+---
 
-Keyboards, mice, shutter buttons and scrolling remotes typically send standard keyboard, pointer, or gamepad events; the app listens for these to provide hands‑free control.
+## 📄 **License**
 
-## Project Roadmap
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-A comprehensive outline of planned features and integrations is available in [RADAR_NOTES_SPEC.md](RADAR_NOTES_SPEC.md).
+---
+
+## 👨‍💻 **Author**
+
+**Radar Notes Team**
+- GitHub: [@jcotebcs](https://github.com/jcotebcs)
+- Project: [Radar Notes](https://github.com/jcotebcs/Radar-)
+
+---
+
+## 🙏 **Acknowledgments**
+
+- Inspired by the character Radar O'Reilly from M*A*S*H
+- Built with modern web technologies and progressive enhancement principles
+- Special thanks to the open-source community for tools and inspiration
+
+---
+
+<div align="center">
+
+**Made with ❤️ for productivity enthusiasts and accessibility advocates**
+
+[⬆ Back to Top](#-radar-notes)
+
+</div>

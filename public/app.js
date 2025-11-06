@@ -5,6 +5,92 @@ let tags = [];
 let pressedButtons = [];
 let chatLog = [];
 
+// UI Helper functions
+function showLoading(element) {
+  if (typeof element === 'string') {
+    element = document.getElementById(element);
+  }
+  if (element) {
+    element.classList.add('loading');
+    if (element.tagName === 'BUTTON') {
+      element.disabled = true;
+    }
+  }
+}
+
+function hideLoading(element) {
+  if (typeof element === 'string') {
+    element = document.getElementById(element);
+  }
+  if (element) {
+    element.classList.remove('loading');
+    if (element.tagName === 'BUTTON') {
+      element.disabled = false;
+    }
+  }
+}
+
+function showSuccess(message, duration = 3000) {
+  const notification = document.createElement('div');
+  notification.textContent = '✅ ' + message;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--accent-color);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+  `;
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease-out';
+    setTimeout(() => notification.remove(), 300);
+  }, duration);
+}
+
+function showError(message, duration = 5000) {
+  const notification = document.createElement('div');
+  notification.textContent = '❌ ' + message;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: var(--danger-color);
+    color: white;
+    padding: 1rem 1.5rem;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow-lg);
+    z-index: 1000;
+    animation: slideIn 0.3s ease-out;
+  `;
+  document.body.appendChild(notification);
+  setTimeout(() => {
+    notification.style.animation = 'slideOut 0.3s ease-out';
+    setTimeout(() => notification.remove(), 300);
+  }, duration);
+}
+
+// Add notification animations to CSS
+if (!document.getElementById('notification-styles')) {
+  const style = document.createElement('style');
+  style.id = 'notification-styles';
+  style.textContent = `
+    @keyframes slideIn {
+      from { transform: translateX(100%); opacity: 0; }
+      to { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes slideOut {
+      from { transform: translateX(0); opacity: 1; }
+      to { transform: translateX(100%); opacity: 0; }
+    }
+  `;
+  document.head.appendChild(style);
+}
+
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('/sw.js').catch(console.error);
 }
@@ -46,30 +132,48 @@ async function getStream() {
 }
 
 async function getVideoStream() {
-  const deviceId = document.getElementById('videoInput').value;
-  if (currentVideoStream) {
-    currentVideoStream.getTracks().forEach(t => t.stop());
+  try {
+    const deviceId = document.getElementById('videoInput').value;
+    if (currentVideoStream) {
+      currentVideoStream.getTracks().forEach(t => t.stop());
+    }
+    currentVideoStream = await navigator.mediaDevices.getUserMedia({
+      video: deviceId ? { deviceId: { exact: deviceId } } : true
+    });
+    const preview = document.getElementById('preview');
+    preview.srcObject = currentVideoStream;
+    preview.style.display = 'block';
+    showSuccess('Camera started');
+  } catch (error) {
+    showError('Failed to start camera: ' + error.message);
+    console.error('Camera error:', error);
   }
-  currentVideoStream = await navigator.mediaDevices.getUserMedia({
-    video: deviceId ? { deviceId: { exact: deviceId } } : true
-  });
-  document.getElementById('preview').srcObject = currentVideoStream;
 }
 
 function stopVideo() {
   if (!currentVideoStream) return;
-  currentVideoStream.getTracks().forEach(t => t.stop());
-  currentVideoStream = null;
-  document.getElementById('preview').srcObject = null;
+  try {
+    currentVideoStream.getTracks().forEach(t => t.stop());
+    currentVideoStream = null;
+    const preview = document.getElementById('preview');
+    preview.srcObject = null;
+    preview.style.display = 'none';
+    showSuccess('Camera stopped');
+  } catch (error) {
+    showError('Failed to stop camera: ' + error.message);
+    console.error('Stop camera error:', error);
+  }
 }
 
-function toggleCamera() {
+async function toggleCamera() {
   if (currentVideoStream) {
     stopVideo();
-    document.getElementById('cameraBtn').textContent = 'Start Camera';
+    document.getElementById('cameraBtn').textContent = '📷 Start Camera';
   } else {
-    getVideoStream();
-    document.getElementById('cameraBtn').textContent = 'Stop Camera';
+    showLoading('cameraBtn');
+    await getVideoStream();
+    hideLoading('cameraBtn');
+    document.getElementById('cameraBtn').textContent = '⏹️ Stop Camera';
   }
 }
 
@@ -90,26 +194,41 @@ function addTag(text) {
 }
 
 async function startRecording() {
-  const stream = await getStream();
-  mediaRecorder = new MediaRecorder(stream);
-  mediaRecorder.start();
-  document.getElementById('recordBtn').classList.add('recording');
-  document.getElementById('recordBtn').textContent = 'Stop Recording';
+  try {
+    showLoading('recordBtn');
+    const stream = await getStream();
+    mediaRecorder = new MediaRecorder(stream);
+    mediaRecorder.start();
+    document.getElementById('recordBtn').classList.add('recording');
+    document.getElementById('recordBtn').textContent = '⏹️ Stop Recording';
+    hideLoading('recordBtn');
+    showSuccess('Recording started');
+  } catch (error) {
+    hideLoading('recordBtn');
+    showError('Failed to start recording: ' + error.message);
+    console.error('Recording error:', error);
+  }
 }
 
 function stopRecording() {
   if (!mediaRecorder) return;
-  mediaRecorder.stop();
-  mediaRecorder = null;
-  document.getElementById('recordBtn').classList.remove('recording');
-  document.getElementById('recordBtn').textContent = 'Start Recording';
+  try {
+    mediaRecorder.stop();
+    mediaRecorder = null;
+    document.getElementById('recordBtn').classList.remove('recording');
+    document.getElementById('recordBtn').textContent = '🔴 Start Recording';
+    showSuccess('Recording stopped');
+  } catch (error) {
+    showError('Failed to stop recording: ' + error.message);
+    console.error('Stop recording error:', error);
+  }
 }
 
-function toggleRecording() {
+async function toggleRecording() {
   if (mediaRecorder && mediaRecorder.state === 'recording') {
     stopRecording();
   } else {
-    startRecording();
+    await startRecording();
   }
 }
 
@@ -204,32 +323,77 @@ navigator.mediaDevices.addEventListener('devicechange', initDevices);
 async function refreshTimer() {
   try {
     const res = await fetch('/api/timer/status');
-    const data = await res.json();
+    const response = await res.json();
+    const data = response.data || response; // Handle both old and new format
     const display = document.getElementById('timerDisplay');
     if (!display) return;
     if (data.running) {
       const secs = Math.ceil(data.remaining / 1000);
       display.textContent = `${data.title}: ${secs}s remaining`;
+    } else if (data.completed) {
+      display.textContent = '⏰ Timer completed!';
+      showSuccess('Timer completed!');
     } else {
       display.textContent = 'No active timer';
     }
-  } catch {}
+  } catch (error) {
+    showError('Failed to refresh timer status');
+  }
 }
 
 async function startTimer() {
-  const title = document.getElementById('timerTitle').value;
-  const seconds = document.getElementById('timerSeconds').value;
-  await fetch('/api/timer/start', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ title, seconds })
-  });
-  refreshTimer();
+  const title = document.getElementById('timerTitle').value.trim();
+  const seconds = parseInt(document.getElementById('timerSeconds').value);
+  
+  if (!title) {
+    showError('Please enter a timer title');
+    return;
+  }
+  if (!seconds || seconds <= 0) {
+    showError('Please enter a valid duration in seconds');
+    return;
+  }
+  
+  try {
+    showLoading('startTimer');
+    const res = await fetch('/api/timer/start', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ title, seconds })
+    });
+    
+    const response = await res.json();
+    hideLoading('startTimer');
+    
+    if (response.success) {
+      showSuccess(`Timer "${title}" started for ${seconds} seconds`);
+      document.getElementById('timerTitle').value = '';
+      document.getElementById('timerSeconds').value = '';
+    } else {
+      showError(response.data?.error || 'Failed to start timer');
+    }
+    refreshTimer();
+  } catch (error) {
+    hideLoading('startTimer');
+    showError('Failed to start timer');
+  }
 }
 
 async function stopTimer() {
-  await fetch('/api/timer/stop', { method: 'POST' });
-  refreshTimer();
+  try {
+    showLoading('stopTimer');
+    const res = await fetch('/api/timer/stop', { method: 'POST' });
+    const response = await res.json();
+    hideLoading('stopTimer');
+    
+    if (response.success) {
+      showSuccess('Timer stopped');
+    }
+    refreshTimer();
+  } catch (error) {
+    hideLoading('stopTimer');
+    showError('Failed to stop timer');
+  }
 }
 
 document.getElementById('startTimer')?.addEventListener('click', startTimer);
@@ -239,44 +403,85 @@ refreshTimer();
 
 // ---- Tally ----
 async function loadCounters() {
-  const res = await fetch('/api/tally');
-  const data = await res.json();
-  const list = document.getElementById('tallyList');
-  if (!list) return;
-  list.innerHTML = '';
-  Object.entries(data).forEach(([name, count]) => {
-    const li = document.createElement('li');
-    li.textContent = `${name}: `;
-    const span = document.createElement('span');
-    span.textContent = count;
-    li.appendChild(span);
-    const btn = document.createElement('button');
-    btn.textContent = '+';
-    btn.addEventListener('click', () => incrementCounter(name));
-    li.appendChild(btn);
-    list.appendChild(li);
-  });
+  try {
+    const res = await fetch('/api/tally');
+    const response = await res.json();
+    const data = response.data || response; // Handle both old and new format
+    const list = document.getElementById('tallyList');
+    if (!list) return;
+    list.innerHTML = '';
+    
+    if (typeof data === 'object' && data !== null) {
+      Object.entries(data).forEach(([name, count]) => {
+        const li = document.createElement('li');
+        li.textContent = `${name}: `;
+        const span = document.createElement('span');
+        span.textContent = count;
+        li.appendChild(span);
+        const btn = document.createElement('button');
+        btn.textContent = '+';
+        btn.addEventListener('click', () => incrementCounter(name));
+        li.appendChild(btn);
+        list.appendChild(li);
+      });
+    }
+  } catch (error) {
+    showError('Failed to load counters');
+  }
 }
 
 async function addCounter() {
   const name = document.getElementById('tallyName').value.trim();
-  if (!name) return;
-  await fetch('/api/tally/create', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name })
-  });
-  document.getElementById('tallyName').value = '';
-  loadCounters();
+  if (!name) {
+    showError('Please enter a counter name');
+    return;
+  }
+  
+  try {
+    showLoading('addCounter');
+    const res = await fetch('/api/tally/create', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+    
+    const response = await res.json();
+    hideLoading('addCounter');
+    
+    if (response.success) {
+      showSuccess(`Counter "${name}" created`);
+      document.getElementById('tallyName').value = '';
+      loadCounters();
+    } else {
+      showError(response.data?.error || 'Failed to create counter');
+    }
+  } catch (error) {
+    hideLoading('addCounter');
+    showError('Failed to create counter');
+  }
 }
 
 async function incrementCounter(name) {
-  await fetch('/api/tally/increment', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ name })
-  });
-  loadCounters();
+  try {
+    const res = await fetch('/api/tally/increment', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name })
+    });
+    
+    const response = await res.json();
+    if (response.success) {
+      const count = response.data?.count;
+      if (count !== undefined) {
+        showSuccess(`${name}: ${count}`);
+      }
+      loadCounters();
+    } else {
+      showError(response.data?.error || 'Failed to increment counter');
+    }
+  } catch (error) {
+    showError('Failed to increment counter');
+  }
 }
 
 document.getElementById('addCounter')?.addEventListener('click', addCounter);
@@ -286,32 +491,51 @@ loadCounters();
 async function loadContacts() {
   try {
     const res = await fetch('/api/contacts');
-    const data = await res.json();
+    const response = await res.json();
+    const data = response.data || response; // Handle both old and new format
     const list = document.getElementById('contactList');
     if (!list) return;
     list.innerHTML = '';
-    data.forEach(c => {
-      const li = document.createElement('li');
-      li.textContent = `${c.name} (${c.phone})`;
-      list.appendChild(li);
-    });
-  } catch {}
+    
+    if (Array.isArray(data)) {
+      data.forEach(c => {
+        const li = document.createElement('li');
+        li.innerHTML = `
+          <span>${c.name}</span>
+          <span style="color: var(--text-muted); font-size: 0.875rem;">${c.phone}</span>
+        `;
+        list.appendChild(li);
+      });
+    }
+  } catch (error) {
+    showError('Failed to load contacts');
+  }
 }
 
 async function loadCallLogs() {
   try {
     const res = await fetch('/api/call-logs');
-    const data = await res.json();
+    const response = await res.json();
+    const data = response.data || response; // Handle both old and new format
     const list = document.getElementById('callLogList');
     if (!list) return;
     list.innerHTML = '';
-    data.forEach(l => {
-      const time = new Date(l.time).toLocaleString();
-      const li = document.createElement('li');
-      li.textContent = `${l.type} with ${l.contact} at ${time} (${l.duration}s)`;
-      list.appendChild(li);
-    });
-  } catch {}
+    
+    if (Array.isArray(data)) {
+      data.forEach(l => {
+        const time = new Date(l.time).toLocaleString();
+        const li = document.createElement('li');
+        const typeIcon = l.type === 'incoming' ? '📞' : '📤';
+        li.innerHTML = `
+          <span>${typeIcon} ${l.type} with ${l.contact}</span>
+          <span style="color: var(--text-muted); font-size: 0.75rem;">${time} (${l.duration}s)</span>
+        `;
+        list.appendChild(li);
+      });
+    }
+  } catch (error) {
+    showError('Failed to load call logs');
+  }
 }
 
 loadContacts();
@@ -324,30 +548,52 @@ function renderChat() {
   log.innerHTML = '';
   chatLog.forEach(entry => {
     const div = document.createElement('div');
-    div.textContent = `${entry.who}: ${entry.text}`;
+    div.innerHTML = `<strong>${entry.who}:</strong> ${entry.text}`;
+    if (entry.who === 'You') {
+      div.style.textAlign = 'right';
+      div.style.color = 'var(--primary-color)';
+    } else {
+      div.style.color = 'var(--accent-color)';
+    }
     log.appendChild(div);
   });
+  log.scrollTop = log.scrollHeight; // Auto-scroll to bottom
 }
 
 async function sendChat() {
   const input = document.getElementById('chatInput');
   const text = input.value.trim();
-  if (!text) return;
+  if (!text) {
+    showError('Please enter a message');
+    return;
+  }
+  
   chatLog.push({ who: 'You', text });
   renderChat();
   input.value = '';
+  
   try {
+    showLoading('chatSend');
     const res = await fetch('/api/chat', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ message: text })
     });
-    const data = await res.json();
-    const textReply = data.reply.replace(/^Radar Oriley:\s*/, '');
-    chatLog.push({ who: 'Radar Oriley', text: textReply });
+    
+    const response = await res.json();
+    hideLoading('chatSend');
+    
+    if (response.success) {
+      const reply = response.data?.reply || 'No response';
+      const textReply = reply.replace(/^Radar Oriley:\s*/, '');
+      chatLog.push({ who: 'Radar Oriley', text: textReply });
+    } else {
+      chatLog.push({ who: 'Radar Oriley', text: 'Sorry, I encountered an error.' });
+    }
     renderChat();
-  } catch {
-    chatLog.push({ who: 'Radar Oriley', text: 'Something went wrong.' });
+  } catch (error) {
+    hideLoading('chatSend');
+    chatLog.push({ who: 'Radar Oriley', text: 'Something went wrong with the connection.' });
     renderChat();
   }
 }
